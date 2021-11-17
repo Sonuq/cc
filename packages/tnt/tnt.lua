@@ -1,4 +1,17 @@
 local args = {...}
+local function getAmount(ItemName)
+    local total = 0
+    for i=1, 16 do
+        turtle.select()
+        local slotamount = turtle.getItemDetail()
+        if item ~= nil then 
+            if item["name"] == ItemName then 
+                turtle.getItemCount() + total
+            end 
+        end 
+    end 
+    return total 
+end             
 local function bomb(n, size)
     for i=1, n do
         turtle.forward()
@@ -15,10 +28,14 @@ local function bomb(n, size)
             end 
         end 
     end 
-end 
-if not args[1] then
-    print("use 'tnt <steps>' to place and ignite tnt")
-    return 
-else
-    bomb(args[1], args[2])
 end
+local modem = peripheral.find("modem")
+rednet.open(modem)
+local id, data = rednet.receive()
+if id then 
+    if not data[1] or not data[2] then
+        return 
+    else
+        bomb(args[1], args[2])
+    end
+end 
