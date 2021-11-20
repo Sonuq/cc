@@ -62,6 +62,7 @@ local function move()
         turtle.turnRight()
         steps + 1
     else
+        steps - 1
         turtle.turnRight()
         turtle.forward() 
     end
