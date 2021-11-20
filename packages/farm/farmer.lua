@@ -1,10 +1,10 @@
 local seed = ""
-
+local rowSize = ""
 --simple log function
 local function log(entry)
     local f = fs.open('./log', 'w')
-    file.write(entry)
-    file.close()
+    f.write(entry)
+    f.close()
 end
 
 
@@ -45,7 +45,7 @@ end
 
 
 local function checkFuel()
-    while (turtle.getFuelLevel <= 0) do 
+    while (turtle.getFuelLevel() <= 0) do 
         log('attempting refuel')
         for i=1, 16 do
             turtle.select(i)  
@@ -54,22 +54,37 @@ local function checkFuel()
     end 
 end
 
+local steps = 0
+local function move()
+    if rowSize > steps then 
+        turtle.turnLeft()
+        turtle.forward()    
+        turtle.turnRight()
+        steps + 1
+    else
+        turtle.turnRight()
+        turtle.forward() 
+    end
+end
 
 local function harvest()
     checkFuel()
     if (checkCrop() == true ) then
         turtle.dig()
         placeCrop()
+        return true
     else (checkCrop() == nil ) then 
         placeCrop()
+        return true
+    else 
+        return false 
     end
-    turtle.turnLeft()
-    turtle.forward()
-    turtle.turnRight()
 end 
 
         
 while true do 
-    harvest()
+    repeat 
+        local h = harvest()
+    until (h == true)
     dropInventory()
 end
