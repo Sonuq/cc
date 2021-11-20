@@ -8,6 +8,24 @@ local function log(entry)
 end
 
 
+local function getAmount(ItemName)
+    local total = 0
+    for i=1, 16 do
+        turtle.select(i)
+        local item = turtle.getItemDetail()
+        if item ~= nil then 
+            if item.name == ItemName then 
+                total = turtle.getItemCount() + total
+            end 
+        end 
+    end 
+    return total 
+end  
+if (getAmount() < rowSize) then 
+    log('fatal error : at least 8 potateos')
+end
+
+
 local function checkCrop()
     local has_block, data = turtle.inspect()
     if has_block then 
@@ -57,7 +75,6 @@ local function checkFuel()
 end
 
 local steps = 0
-local rsteps = 0
 local function move()
     if rowSize > steps then 
         turtle.turnLeft()
@@ -78,7 +95,7 @@ local function harvest()
         turtle.dig()
         placeCrop()
         return true
-    elseif (checkCrop() == nil ) 
+    elseif (checkCrop() == nil ) then 
         placeCrop()
         return true
     else 
@@ -94,6 +111,7 @@ while true do
         repeat
             local h = harvest()
         until (h == true)
+        move()
     end
     dropInventory()
 end
