@@ -1,5 +1,5 @@
-local seed = ""
-local rowSize = ""
+local seed = "minecraft:potateos"
+local rowSize = 8
 --simple log function
 local function log(entry)
     local f = fs.open('./log', 'w')
@@ -11,7 +11,7 @@ end
 local function checkCrop()
     local has_block, data = turtle.inspect()
     if has_block then 
-        if data["age"] == 7 then 
+        if data.state.age == 7 then 
             return true   
         else 
             return false 
@@ -36,16 +36,18 @@ local function placeCrop()
     for i=1, 16 do 
         turtle.select(i)
         local item = turtle.getItemDetail()
-        if item["name"] == seed then 
-            turtle.place()
-            return true   
+        if item ~= nil then 
+            if item.name == seed then
+                turtle.place()
+                return true
+            end   
         end 
     end 
 end
 
 
 local function checkFuel()
-    while (turtle.getFuelLevel() <= 0) do 
+    while (turtle.getFuelLevel() == 0) do 
         log('attempting refuel')
         for i=1, 16 do
             turtle.select(i)  
@@ -55,16 +57,18 @@ local function checkFuel()
 end
 
 local steps = 0
+local rsteps = 0
 local function move()
     if rowSize > steps then 
         turtle.turnLeft()
         turtle.forward()    
         turtle.turnRight()
-        steps + 1
+        steps = steps + 1
     else
-        steps - 1
         turtle.turnRight()
-        turtle.forward() 
+        for i=1, rowSize then 
+            turtle.forward()
+        end 
     end
 end
 
@@ -74,7 +78,7 @@ local function harvest()
         turtle.dig()
         placeCrop()
         return true
-    else (checkCrop() == nil ) then 
+    elseif (checkCrop() == nil ) 
         placeCrop()
         return true
     else 
@@ -82,10 +86,14 @@ local function harvest()
     end
 end 
 
+
+
         
 while true do 
-    repeat 
-        local h = harvest()
-    until (h == true)
+    for i=1, rowSize then 
+        repeat
+            local h = harvest()
+        until (h == true)
+    end
     dropInventory()
 end
