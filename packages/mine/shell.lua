@@ -1,1 +1,1 @@
-shell.run('miner.lua')
+shell.run('miner.lua 500')
