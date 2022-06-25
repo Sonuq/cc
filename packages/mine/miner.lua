@@ -2,7 +2,6 @@ local args = {...}
 local blacklist = {'minecraft:cobblestone', 'minecraft:dirt', 'create:andesite_cobblestone'}
 local notMine = 'forbidden_arcanus:stella_arcanum'
 term.clear()
-os.loadApi('apis/mover.lua')
 
 
 local function cPrint(str, color)
