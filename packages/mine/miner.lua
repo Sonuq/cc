@@ -16,7 +16,18 @@ if turtle.getFuelLevel() == 0 then
     cPrint('no fuel', colors.red)
 end
 
-os.loadApi('mover.lua')
+local function loadApi(path)
+    local s, err = pcall(os.loadApi(path))
+    if (s) then 
+        cPrint('Load Api - [' .. path .. ']', colors.green)
+    else
+        cPrint('Failed to load Api [' .. path .. ']', colors.red)
+        cPrint(err, colors.red)
+    end 
+end
+
+
+loadApi('apis/mover.lua')
 
 
 
@@ -44,20 +55,21 @@ end
 
 
 local function inventoryRoutine()
-    cPrint('Clearing inventory...', colors.green)
-    if turtle.getItemSpace(16) == 0 then
-        for slot = 1, 16 do 
-            turtle.select(slot)
-            if isItemBad(turtle.getItemDetail().name) == true then 
+    while true do 
+        cPrint('Clearing inventory...', colors.green)
+        if turtle.getItemSpace(16) == 0 then
+            for slot = 1, 16 do 
+                turtle.select(slot)
+                if isItemBad(turtle.getItemDetail().name) == true then 
+                    print('===============================')
+                    cPrint('Cleared' .. ' ' .. turtle.getItemCount() .. ' ' .. turtle.getItemDetail().name, colors.green)
+                    turtle.drop()
+                end
                 print('===============================')
-                cPrint('Cleared' .. ' ' .. turtle.getItemCount() .. ' ' .. turtle.getItemDetail().name, colors.green)
-                term.clear()
-                turtle.drop()
-            end
-            print('===============================')
-        end 
+            end 
+        end
     end
-
+    term.clear()
 end
 local function dig()
     if turtle.inspect().name == notMine then
@@ -81,7 +93,11 @@ end
 
 
 local function mineRoutine()
-    for i = 1, args[1] do
+    if not args[1] then 
+        length = math.floor(turtle.getFuelLevel() / 5) / 2
+    end
+
+    for i = 1, length do
         turtle.dig()
         turtle.digDown()
         turtle.digUp()
@@ -111,13 +127,14 @@ local function mineRoutine()
 
         turtle.turnRight()
     end
+
+    mover.go_to(0, 0, 0)
+
+    if turtle.inspect().name == 'minecraft:chest' then 
+        turtle.drop()
+    end 
 end
 
 
+parallel.waitForAll(mineRoutine, inventoryRoutine)
 
-parallel.waitForAny(mineRoutine, inventoryRoutine)
-mover.go_to(0, 0, 0)
-inventoryRoutine()
-if turtle.inspect().name == 'minecraft:chest' then 
-    turtle.drop()
-end 
