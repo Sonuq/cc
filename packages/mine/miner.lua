@@ -16,7 +16,7 @@ if turtle.getFuelLevel() == 0 then
 end
 
 local function loadApi(path)
-    local s, err = pcall(os.loadApi(path))
+    local s, err = pcall(os.loadAPI(path))
     if (s) then 
         cPrint('Load Api - [' .. path .. ']', colors.green)
     else
